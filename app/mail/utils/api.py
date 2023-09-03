@@ -35,7 +35,8 @@ def extract_message_payload(msg):
         "attachments": msg.attachments,
         "date": msg.date,
         "text_html": msg.text_html,
-        "text_plain": msg.text_plain
+        "text_plain": msg.text_plain,
+        "flags": msg.flags
     }
 
 
@@ -50,6 +51,7 @@ def get_mails(request) -> list[dict]:
     session = get_imap_session(user)
     session.select_folder('INBOX')
     threads = session.thread()
+    threads = tuple(reversed(threads))
     page, paginator = paginate_threads(threads, request)
     messages = []
     for thread in page:

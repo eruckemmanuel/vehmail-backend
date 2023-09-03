@@ -29,21 +29,21 @@ services:
       - 6379
     networks:
       - app
-  celery:
-      restart: always
-      build:
-        context: .
-        dockerfile: ./Dockerfile
-      command: celery -A app worker -l info
-      volumes:
-        - ./app:/app
-      env_file:
-        - .env
-      depends_on:
-        - redis
-        - web
-      networks:
-        - app
+  # celery:
+  #     restart: always
+  #     build:
+  #       context: .
+  #       dockerfile: ./Dockerfile
+  #     command: celery -A app worker -l info
+  #     volumes:
+  #       - ./app:/app
+  #     env_file:
+  #       - .env
+  #     depends_on:
+  #       - redis
+  #       - web
+  #     networks:
+  #       - app
 
 networks:
   app:
