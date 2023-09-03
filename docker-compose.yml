@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: daphne -b 0.0.0.0 -p ${APP_PORT} app.asgi:application
+    restart: always
+    volumes:
+      - ${MEDIA_PATH}:/media
+      - ./static:/app/static/
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    env_file:
+      - .env
+    networks:
+      - app
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    restart: always
+    command: [ "redis-server", "--bind", "redis", "--port", "6379" ]
+    env_file:
+      - .env
+    expose:
+      - 6379
+    networks:
+      - app
+  celery:
+      restart: always
+      build:
+        context: .
+        dockerfile: ./Dockerfile
+      command: celery -A app worker -l info
+      volumes:
+        - ./app:/app
+      env_file:
+        - .env
+      depends_on:
+        - redis
+        - web
+      networks:
+        - app
+
+networks:
+  app:
+    driver: bridge
