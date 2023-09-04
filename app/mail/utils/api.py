@@ -25,19 +25,23 @@ def get_imap_session(user: User) -> IMAPClient:
     return server
 
 
-def extract_message_payload(msg):
-    return {
+def extract_message_payload(msg, full=False):
+    payload = {
         "from": msg.from_,
         "to": msg.to,
         "cc": msg.cc,
         "message_id": msg.message_id,
         "subject": msg.subject,
-        "attachments": msg.attachments,
+        "has_attachments": len(msg.attachments) > 0,
         "date": msg.date,
-        "text_html": msg.text_html,
-        "text_plain": msg.text_plain,
         "flags": msg.flags
     }
+    if full:
+        payload["text_html"] = msg.text_html,
+        payload["text_plain"] = msg.text_plain
+        payload["attachments"] = msg.attachments
+
+    return payload
 
 
 def paginate_threads(threads, request):
@@ -46,26 +50,49 @@ def paginate_threads(threads, request):
     return page, paginator
 
 
-def get_mails(request) -> list[dict]:
+def fetch_thread_messages(session, thread_uuids, return_full_message=False):
+    thread_messages = []
+    fetched_messages = session.fetch(thread_uuids, 'RFC822')
+    for uuid, msg_data in fetched_messages.items():
+        content = msg_data[b"RFC822"]
+        msg = mailparser.parse_from_bytes(content)
+        payload = extract_message_payload(msg, full=return_full_message)
+        payload["uuid"] = uuid
+        thread_messages.append(payload)
+
+    return thread_messages
+
+
+def get_mails(request, folder=None) -> list[dict]:
+    if not folder:
+        folder = 'INBOX'
+
     user = request.user
     session = get_imap_session(user)
-    session.select_folder('INBOX')
+    session.select_folder(folder)
     threads = session.thread()
     threads = tuple(reversed(threads))
     page, paginator = paginate_threads(threads, request)
-    messages = []
+    mails = []
     for thread in page:
-        thread_messages = []
+        thread_uuids = ()
         for mini_thread in thread:
-            fetched_messages = session.fetch(mini_thread, 'RFC822')
-            for uuid, msg_data in fetched_messages.items():
-                content = msg_data[b"RFC822"]
-                msg = mailparser.parse_from_bytes(content)
-                thread_messages.append(extract_message_payload(msg))
+            if isinstance(mini_thread, tuple):
+                thread_uuids += mini_thread
+            else:
+                thread_uuids = thread
+                break
 
-        messages.append(thread_messages)
+        mails.append(fetch_thread_messages(session, thread_uuids))
 
-    return paginator.get_paginated_response(messages)
+    return paginator.get_paginated_response(mails)
+
+
+def get_message_details(thread_uuids_str: str, user: User):
+    threads_uuids = tuple(thread_uuids_str.split(','))
+    session = get_imap_session(user)
+    session.select_folder('INBOX')
+    return fetch_thread_messages(session, threads_uuids, return_full_message=True)
 
 
 def get_folders(user):
