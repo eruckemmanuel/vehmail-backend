@@ -42,3 +42,8 @@ class MailBoxEventAPIView(APIView):
         logger.info(f"{request.query_params}", 'the data')
         print(f"\n\n{request.query_params}", 'the data')
         return Response({"status": "success"})
+
+    def put(self, request):
+        logger.info(f"{request.data}", 'the data')
+        print(f"\n\n {request.data}", 'the data')
+        return Response({"status": "success"})
