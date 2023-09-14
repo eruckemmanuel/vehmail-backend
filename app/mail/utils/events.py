@@ -14,9 +14,8 @@ def save_dovecot_push_event(data: dict) -> None:
     EmailEvent.objects.create(
         uid=data.get('imap-uid'), uid_validity=data.get('imap-uidvalidity'),
         subject=data.get('subject'), user=data.get('user'), snippet=data.get('snippet'),
-        folder=data.get('folder'), sender=data.get('sender'), event=data.get('event'))
+        folder=data.get('folder'), sender=data.get('from'), event=data.get('event'))
 
 
 def process_dovecot_push_event(event_id: int) -> None:
     pass
-
