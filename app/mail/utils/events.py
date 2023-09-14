@@ -12,7 +12,7 @@ def event_token_is_valid(event_token: str) -> bool:
 
 def save_dovecot_push_event(data: dict) -> None:
     EmailEvent.objects.create(
-        uid=data.get('uid'), uid_validity=data.get('uid-validity'),
+        uid=data.get('imap-uid'), uid_validity=data.get('imap-uidvalidity'),
         subject=data.get('subject'), user=data.get('user'), snippet=data.get('snippet'),
         folder=data.get('folder'), sender=data.get('sender'), event=data.get('event'))
 
