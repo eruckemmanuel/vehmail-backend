@@ -376,6 +376,9 @@ if not SSO_DISABLED:
     ]
 
 
+DOVECOT_PUSH_NOTIFICATION_TOKEN = config('DOVECOT_PUSH_NOTIFICATION_TOKEN', '')
+
+
 def set_apps():
     try:
         if SSO_DISABLED:
