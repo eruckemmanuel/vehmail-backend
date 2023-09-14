@@ -188,8 +188,8 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Redis Channel configs
-REDIS_HOST = os.environ.get('REDIS_HOST')
-REDIS_PORT = os.environ.get('REDIS_PORT')
+REDIS_HOST = config('REDIS_HOST', 'localhost')
+REDIS_PORT = config('REDIS_PORT', '6397')
 
 CHANNEL_LAYERS = {
     "default": {

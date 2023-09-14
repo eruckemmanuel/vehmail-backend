@@ -12,7 +12,6 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     hash = models.CharField(max_length=200, null=True, blank=True)
     hash_key = models.CharField(max_length=200, null=True, blank=True)
-    user_uuid = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return self.email
