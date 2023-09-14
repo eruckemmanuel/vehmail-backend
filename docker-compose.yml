@@ -34,7 +34,7 @@ services:
       build:
         context: .
         dockerfile: ./Dockerfile
-      command: celery -A app worker -l info
+      command: celery -A app.celery worker -l info
       volumes:
         - ${MEDIA_PATH}:/media
       env_file:
