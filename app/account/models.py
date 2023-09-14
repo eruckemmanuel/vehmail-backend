@@ -15,9 +15,3 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
-
-    def save(self, *args, **kwargs):
-        if not self.user_uuid:
-            self.user_uuid = UUID(str(uuid4())).hex
-
-        return super(User, self).save(*args, **kwargs)
