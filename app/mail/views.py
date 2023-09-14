@@ -3,8 +3,11 @@ import logging
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+
+from common.exceptions import RequestUnAuthorizedError
 from mail.utils.api import get_mails, get_folders, get_message_details
 from mail.utils.sample import data
+from mail.utils.events import event_token_is_valid, save_dovecot_push_event
 
 logger = logging.getLogger(__name__)
 
@@ -33,17 +36,14 @@ class MailBoxFolders(APIView):
 class MailBoxEventAPIView(APIView):
     permission_classes = [AllowAny]
 
-    def post(self, request):
-        logger.info(f"{request.data}", 'the data')
-        print(f"\n\n {request.data}", 'the data')
+    def post(self, request, event_token):
+        if not event_token_is_valid(event_token):
+            raise RequestUnAuthorizedError({"detail": "No authorized"})
+        save_dovecot_push_event(request.data)
         return Response({"status": "success"})
 
-    def get(self, request):
-        logger.info(f"{request.query_params}", 'the data')
-        print(f"\n\n{request.query_params}", 'the data')
-        return Response({"status": "success"})
-
-    def put(self, request):
-        logger.info(f"{request.data}", 'the data')
-        print(f"\n\n {request.data}", 'the data')
+    def put(self, request, event_token):
+        if not event_token_is_valid(event_token):
+            raise RequestUnAuthorizedError({"detail": "No authorized"})
+        save_dovecot_push_event(request.data)
         return Response({"status": "success"})

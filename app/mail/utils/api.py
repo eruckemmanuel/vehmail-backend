@@ -25,6 +25,15 @@ def get_imap_session(user: User) -> IMAPClient:
     return server
 
 
+def get_user_mail_uuids(user: User, folder=None) -> tuple:
+    if not folder:
+        folder = 'INBOX'
+    session = get_imap_session(user)
+    session.select_folder(folder)
+    mail_uuids = session.search()
+    return mail_uuids
+
+
 def extract_message_payload(msg, full=False):
     payload = {
         "from": msg.from_,

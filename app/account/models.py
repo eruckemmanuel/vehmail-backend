@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from uuid import uuid4, UUID
 
 
 class User(AbstractUser):
@@ -11,6 +12,13 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     hash = models.CharField(max_length=200, null=True, blank=True)
     hash_key = models.CharField(max_length=200, null=True, blank=True)
+    user_uuid = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        if not self.user_uuid:
+            self.user_uuid = UUID(str(uuid4())).hex
+
+        return super(User, self).save(*args, **kwargs)
