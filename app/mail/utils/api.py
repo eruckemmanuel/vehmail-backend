@@ -1,37 +1,15 @@
 import logging
-import email
+
 import mailparser
 
-from imapclient import IMAPClient
-
 from account.models import User
-from account.utils import get_remote_user_account, get_remote_user_password
 from common.utils.api import MailboxPageNumberPagination
+from mail.utils.constants import IMAP_FULL_MESSAGE, IMAP_MESSAGE_HEADER
+from mail.backend.mail import get_imap_session
 
 logger = logging.getLogger(__name__)
 
 IMAP_HOST = 'mail.vehseh.com'
-
-
-def get_user_credentials(user: User) -> tuple:
-    account = get_remote_user_account(user)
-    return user.email, get_remote_user_password(account)
-
-
-def get_imap_session(user: User) -> IMAPClient:
-    username, password = get_user_credentials(user)
-    server = IMAPClient(IMAP_HOST, use_uid=True)
-    server.login(username, password)
-    return server
-
-
-def get_user_mail_uuids(user: User, folder=None) -> tuple:
-    if not folder:
-        folder = 'INBOX'
-    session = get_imap_session(user)
-    session.select_folder(folder)
-    mail_uuids = session.search()
-    return mail_uuids
 
 
 def extract_message_payload(msg, full=False):
@@ -41,9 +19,10 @@ def extract_message_payload(msg, full=False):
         "cc": msg.cc,
         "message_id": msg.message_id,
         "subject": msg.subject,
-        "has_attachments": len(msg.attachments) > 0,
+        "in_reply_to": msg.in_reply_to,
+        "num_attachments": len(msg.attachments),
         "date": msg.date,
-        "flags": msg.flags
+        "folder": msg.folder
     }
     if full:
         payload["text_html"] = msg.text_html,
@@ -61,7 +40,7 @@ def paginate_threads(threads, request):
 
 def fetch_thread_messages(session, thread_uuids, return_full_message=False):
     thread_messages = []
-    fetched_messages = session.fetch(thread_uuids, 'RFC822')
+    fetched_messages = session.fetch(thread_uuids, IMAP_FULL_MESSAGE)
     for uuid, msg_data in fetched_messages.items():
         content = msg_data[b"RFC822"]
         msg = mailparser.parse_from_bytes(content)

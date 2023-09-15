@@ -7,10 +7,10 @@ class Mail(BaseModel):
     sender = models.JSONField()
     to = models.JSONField(null=True, blank=True)
     cc = models.JSONField(null=True, blank=True)
-    uid = models.CharField(max_length=50)
+    uid = models.CharField(max_length=50, unique=True)
     folder = models.CharField(max_length=50, null=True, blank=True)
     subject = models.CharField(max_length=1000, null=True, blank=True)
-    message_id = models.CharField(max_length=500)
+    message_id = models.CharField(max_length=500, unique=True)
     in_reply_to = models.CharField(max_length=500, null=True, blank=True)
     num_attachments = models.IntegerField(null=True, blank=True)
     date = models.DateTimeField(null=True, blank=True)
@@ -24,7 +24,7 @@ class Mail(BaseModel):
 
 
 class EmailEvent(BaseModel):
-    uid = models.CharField(max_length=50)
+    uid = models.CharField(max_length=50, unique=True)
     event = models.CharField(max_length=50)
     folder = models.CharField(max_length=50, null=True, blank=True)
     subject = models.CharField(max_length=1000, null=True)
