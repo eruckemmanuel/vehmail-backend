@@ -2,9 +2,8 @@ import logging
 
 import mailparser
 
-from account.models import User
 from common.utils.api import MailboxPageNumberPagination
-from mail.utils.constants import IMAP_FULL_MESSAGE, IMAP_MESSAGE_HEADER
+from mail.utils.constants import IMAP_FULL_MESSAGE
 from mail.backend.mail import get_imap_session
 
 logger = logging.getLogger(__name__)
@@ -75,15 +74,3 @@ def get_mails(request, folder=None) -> list[dict]:
 
     return paginator.get_paginated_response(mails)
 
-
-def get_message_details(thread_uuids_str: str, user: User):
-    threads_uuids = tuple(thread_uuids_str.split(','))
-    session = get_imap_session(user)
-    session.select_folder('INBOX')
-    return fetch_thread_messages(session, threads_uuids, return_full_message=True)
-
-
-def get_folders(user):
-    session = get_imap_session(user)
-    folders = session.list_folders()
-    return [{'title': item[-1]} for item in folders]

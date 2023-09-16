@@ -4,16 +4,20 @@ from mail.models import Mail
 
 
 class MailSerializer(serializers.ModelSerializer):
-    seen = serializers.SerializerMethodField()
+    uuid = serializers.SerializerMethodField()
 
     class Meta:
         model = Mail
-        fields = ["id", "from", "to", "uid", "subject", "message_id", "in_reply_to", "date", "created", "seen",
-                  "cc", "folder", "num_attachments", "snippet"]
+        fields = ["id", "sender", "to", "uid", "subject", "message_id", "in_reply_to", "date", "created", "seen",
+                  "cc", "folder", "num_attachments", "snippet", "sender_name", "sender_email", "uuid"]
 
-    def get_seen(self, mail):
-        if mail.seen:
-            return True
+    def get_uuid(self, mail):
+        return mail.uid
 
-        if not mail.seen:
-            pass
+
+def get_serialized_mails(mails, many=False):
+    return MailSerializer(mails, many=many).data
+
+
+class MailMessageSerializer(serializers.Serializer):
+    pass

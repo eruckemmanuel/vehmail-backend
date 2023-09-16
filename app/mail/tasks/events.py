@@ -1,6 +1,6 @@
 from celery import shared_task
 
-from mail.utils.events import process_dovecot_push_event
+from mail.services.events import process_dovecot_push_event
 
 
 @shared_task
