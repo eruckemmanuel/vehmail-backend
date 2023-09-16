@@ -68,5 +68,5 @@ def get_mail_threads(message_id: str) -> QuerySet[Mail]:
     return threads
 
 
-def update_mail(uid: str, data: dict):
-    Mail.objects.filter(uid=uid).update(**data)
+def update_user_mail(user: User, uid: str, data: dict):
+    Mail.objects.filter(Q(user=user) & Q(uid=uid)).update(**data)

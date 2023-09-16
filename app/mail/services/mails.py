@@ -6,7 +6,7 @@ from rest_framework.request import Request
 from account.dao.user import get_all_users
 from account.models import User
 from common.utils.api import MailboxPageNumberPagination
-from mail.dao.mail import save_user_mail, get_user_mails, get_mail_threads, update_mail
+from mail.dao.mail import save_user_mail, get_user_mails, get_mail_threads, update_user_mail
 from mail.serializers.mail import get_serialized_mails
 from mail.services.imap import IMAPService
 from mail.utils.api import extract_message_payload
@@ -79,7 +79,7 @@ def handle_get_mail_message(request: Request):
         payload = extract_message_payload(msg, full=True)
         payload["uid"] = uid
         thread_messages.append(payload)
-        update_mail(uid, {"seen": True})
+        update_user_mail(request.user, uid, {"seen": True})
 
     return thread_messages
 
