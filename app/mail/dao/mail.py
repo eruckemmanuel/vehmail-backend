@@ -21,7 +21,7 @@ def save_user_mail(user: User, uid: str, mail: MailParser, folder: str) -> Mail:
 
     return Mail.objects.create(sender=mail.from_, to=mail.to, cc=mail.cc, in_reply_to=mail.in_reply_to,
                                uid=uid, subject=mail.subject, message_id=mail.message_id, date=mail.date,
-                               user=user, folder=folder, sender_name=mail.from_[0], sender_email=mail.from_[1])
+                               user=user, folder=folder, sender_name=mail.from_[0][0], sender_email=mail.from_[0][1])
 
 
 def get_mail_from_uid(uid: str) -> Mail:

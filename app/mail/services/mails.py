@@ -38,7 +38,10 @@ def sync_user_mails_for_all_folders(user: User):
 def sync_all_users_mails_from_backend():
     users = get_all_users()
     for user in users:
-        sync_user_mails_for_all_folders(user)
+        try:
+            sync_user_mails_for_all_folders(user)
+        except Exception as e:
+            logger.error(e)
 
 
 def sync_all_mail_seen_state():
