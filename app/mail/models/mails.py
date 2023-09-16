@@ -9,7 +9,7 @@ class Mail(BaseModel):
     sender_email = models.EmailField(max_length=250, null=True, blank=True)
     to = models.JSONField(null=True, blank=True)
     cc = models.JSONField(null=True, blank=True)
-    uid = models.CharField(max_length=50, unique=True)
+    uid = models.CharField(max_length=50)
     folder = models.CharField(max_length=50, null=True, blank=True)
     subject = models.CharField(max_length=1000, null=True, blank=True)
     message_id = models.CharField(max_length=1000, unique=True)

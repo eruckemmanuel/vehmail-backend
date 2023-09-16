@@ -4,7 +4,7 @@ from common.models import BaseModel
 
 
 class EmailEvent(BaseModel):
-    uid = models.CharField(max_length=50, unique=True)
+    uid = models.CharField(max_length=50)
     event = models.CharField(max_length=50)
     folder = models.CharField(max_length=50, null=True, blank=True)
     subject = models.CharField(max_length=1000, null=True)
