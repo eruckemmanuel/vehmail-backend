@@ -1,25 +1,19 @@
-# Dockerized Django application starter
+# Vehmail Backend
 
-Starter configurations for a django project, deployed with docker compose
-
-## Services
-This dockerized setup adds support for:
-- Redis
-- Celery
+Django project for vehmail backend
 
 
-## Setup
-
-Copy the contents of your django project folder into the app directory
-
-```shell
-cp -R vehamil-backend/* app/
-```
-
-### Environment variables
+## Environment variables
 Copy from the sample.env file and update to match your app settings
 
 ```shell
 cp sample.env .env
 ```
 Add other environment variables used by your application to the `.env` file
+
+
+## Run
+
+```shell
+docker-compose up -d
+```
