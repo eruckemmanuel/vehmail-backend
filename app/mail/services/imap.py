@@ -52,4 +52,7 @@ class IMAPService(object):
         folders = self.session.list_folders()
         return [{'title': item[-1]} for item in folders]
 
+    def message_is_seen(self, uid):
+        flags = self.get_mail_flags((int(uid),))[int(uid)]
+        return b'\\Seen' in flags
 
